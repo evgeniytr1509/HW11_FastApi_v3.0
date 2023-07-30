@@ -2,15 +2,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./contacts.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
-# Создаем движок SQLAlchemy
-engine = create_engine(DATABASE_URL)
+# Определение Base
+Base = declarative_base()
 
+# Создаем базу данных, если она не существует
+Base.metadata.create_all(bind=engine)
 
+# Функция для получения сессии базы данных
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-#Base = declarative_base()
 
 def get_db():
     db = SessionLocal()

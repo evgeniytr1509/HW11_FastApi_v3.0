@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from src.routes.notes import router as notes_router
-from src.routes.tags import router as tags_router
+from routes.notes import router as notes_router
+from routes.tags import router as tags_router
 
 app = FastAPI()
 

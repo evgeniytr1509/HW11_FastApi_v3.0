@@ -1,38 +1,38 @@
 from sqlalchemy.orm import Session
-from ..database.models import Contact
-from ..database.db import SessionLocal, database
+from database.db import SessionLocal
+from schemas import ContactCreate, ContactRead
+from database.models import Contact  
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def get_contacts(db: Session):
-    return db.query(Contact).all()
-
-def get_contact_by_id(db: Session, contact_id: int):
-    return db.query(Contact).filter(Contact.id == contact_id).first()
-
-def create_contact(db: Session, contact_data):
-    contact = Contact(**contact_data)
+def create_contact(db: Session, contact_data: ContactCreate):
+    #  логика для создания контакта в базе данных
+    contact = Contact(**contact_data.dict())
     db.add(contact)
     db.commit()
     db.refresh(contact)
     return contact
 
-def update_contact(db: Session, contact_id: int, contact_data):
+def get_contacts(db: Session):
+    # логика для получения всех контактов из базы данных
+    return db.query(Contact).all()
+
+def get_contact_by_id(db: Session, contact_id: int):
+    # логика для получения контакта по ID из базы данных
+    return db.query(Contact).filter(Contact.id == contact_id).first()
+
+def update_contact(db: Session, contact_id: int, contact_data: ContactCreate):
+    # логика для обновления контакта в базе данных по ID
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
-    for key, value in contact_data.items():
-        setattr(contact, key, value)
-    db.commit()
-    db.refresh(contact)
+    if contact:
+        for key, value in contact_data.dict().items():
+            setattr(contact, key, value)
+        db.commit()
+        db.refresh(contact)
     return contact
 
 def delete_contact(db: Session, contact_id: int):
+    #  логика для удаления контакта из базы данных по ID
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
-    db.delete(contact)
-    db.commit()
-    return {"message": "Contact successfully deleted"}
+    if contact:
+        db.delete(contact)
+        db.commit()
+    return {"message": "Contact deleted successfully"}

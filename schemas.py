@@ -13,7 +13,7 @@ class ContactBase(BaseModel):
 class ContactCreate(ContactBase):
     pass
 
-class Contact(ContactBase):
+class ContactRead(ContactBase):
     id: int
 
     class Config:

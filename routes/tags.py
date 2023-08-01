@@ -1,31 +1,44 @@
-from sqlalchemy.orm import Session
-from ..database.models import Tag
-from ..database.db import SessionLocal
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from ..database.models import Contact  
 
-def create_tag(db: Session, name: str):
-    tag = Tag(name=name)
-    db.add(tag)
-    db.commit()
-    db.refresh(tag)
-    return tag
 
-def get_tag(db: Session, tag_id: int):
-    return db.query(Tag).filter(Tag.id == tag_id).first()
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
-def get_tags(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Tag).offset(skip).limit(limit).all()
+# Определение Base
+Base = declarative_base()
 
-def update_tag(db: Session, tag_id: int, name: str):
-    tag = db.query(Tag).filter(Tag.id == tag_id).first()
-    if tag:
-        tag.name = name
+# создание базі данных
+Base.metadata.create_all(bind=engine)
+
+# Функция для получения сессии базы данных
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# модель Contact для работы с контактами
+
+def create_contact(first_name: str, last_name: str, email: str, phone_number: str, birthday: Date, additional_data: str = None):
+    contact = Contact(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        phone_number=phone_number,
+        birthday=birthday,
+        additional_data=additional_data
+    )
+    db = SessionLocal()
+    try:
+        db.add(contact)
         db.commit()
-        db.refresh(tag)
-    return tag
-
-def delete_tag(db: Session, tag_id: int):
-    tag = db.query(Tag).filter(Tag.id == tag_id).first()
-    if tag:
-        db.delete(tag)
-        db.commit()
-    return tag
+        db.refresh(contact)
+        return contact
+    finally:
+        db.close()

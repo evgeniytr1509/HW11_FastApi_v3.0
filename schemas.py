@@ -8,7 +8,7 @@ class ContactBase(BaseModel):
     email: str
     phone: str
     birthday: Optional[date] = None
-    additional_data: Optional[dict] = None
+    
 
 class ContactCreate(ContactBase):
     pass
@@ -17,4 +17,5 @@ class ContactRead(ContactBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+        

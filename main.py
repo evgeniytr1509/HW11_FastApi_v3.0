@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from routes.notes import router as notes_router
-from routes.tags import router as tags_router
+from routes.contacts import router as notes_router
+
 
 app = FastAPI()
 
-app.include_router(notes_router, prefix="/notes", tags=["notes"])
-app.include_router(tags_router, prefix="/tags", tags=["tags"])
+app.include_router(notes_router, prefix="/contacts", tags=["contacts"])

@@ -1,7 +1,22 @@
 from fastapi import FastAPI
-from routes.contacts import router as notes_router
+from starlette.middleware.cors import CORSMiddleware
 
+from routes import todos, auth
 
 app = FastAPI()
 
-app.include_router(notes_router, prefix="/contacts", tags=["contacts"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router)
+app.include_router(todos.router, prefix='/api')
+
+
+@app.get("/")
+def read_root():
+    return {"message": "TODO API"}
